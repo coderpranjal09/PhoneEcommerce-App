@@ -9,7 +9,6 @@ const generateToken = (id) => {
   });
 };
 
-// REGISTER - No changes needed (public)
 const registerUser = async (req, res) => {
   try {
     const { name, mobile, passkey } = req.body;
@@ -31,16 +30,12 @@ const registerUser = async (req, res) => {
       passkey: hashedPasskey,
     });
 
-    // Generate token for immediate login after registration
-    const token = generateToken(user._id);
-
     res.status(201).json({
       _id: user._id,
       name: user.name,
       mobile: user.mobile,
       subscriptionPaid: user.subscriptionPaid,
       isVerified: user.isVerified,
-      token: token, // Send token on registration
     });
   } catch (error) {
     console.error(error);
@@ -48,7 +43,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// LOGIN - No changes needed (public)
 const loginUser = async (req, res) => {
   try {
     const { mobile, passkey } = req.body;
@@ -91,108 +85,55 @@ const loginUser = async (req, res) => {
   }
 };
 
-// SUBMIT PAYMENT - Now protected
 const submitPayment = async (req, res) => {
   try {
     const { userId, transactionId } = req.body;
 
-    // For admin users, they might be submitting on behalf of user
-    if (req.userType === 'admin') {
-      // Admin can submit payment for any user
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      
-      // Check if already paid
-      if (user.subscriptionPaid) {
-        return res.status(400).json({ message: 'Subscription already paid' });
-      }
-
-      // Update user with transaction ID and mark as paid
-      user.transactionId = transactionId;
-      user.subscriptionPaid = true;
-      user.subscriptionDate = new Date();
-      await user.save();
-
-      // Create verification request
-      const verificationRequest = await VerificationRequest.create({
-        userId: user._id,
-        name: user.name,
-        mobile: user.mobile,
-        transactionId: transactionId,
-        status: 'pending',
-      });
-
-      res.json({
-        message: 'Payment submitted successfully',
-        verificationRequestId: verificationRequest._id,
-        user: {
-          _id: user._id,
-          name: user.name,
-          mobile: user.mobile,
-          subscriptionPaid: user.subscriptionPaid,
-        },
-      });
-    } else {
-      // Regular user can only submit payment for themselves
-      if (req.user._id.toString() !== userId) {
-        return res.status(403).json({ message: 'Not authorized to submit payment for this user' });
-      }
-
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      // Check if already paid
-      if (user.subscriptionPaid) {
-        return res.status(400).json({ message: 'Subscription already paid' });
-      }
-
-      // Update user with transaction ID and mark as paid
-      user.transactionId = transactionId;
-      user.subscriptionPaid = true;
-      user.subscriptionDate = new Date();
-      await user.save();
-
-      // Create verification request
-      const verificationRequest = await VerificationRequest.create({
-        userId: user._id,
-        name: user.name,
-        mobile: user.mobile,
-        transactionId: transactionId,
-        status: 'pending',
-      });
-
-      res.json({
-        message: 'Payment submitted successfully',
-        verificationRequestId: verificationRequest._id,
-        user: {
-          _id: user._id,
-          name: user.name,
-          mobile: user.mobile,
-          subscriptionPaid: user.subscriptionPaid,
-        },
-      });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
+
+    // Check if already paid
+    if (user.subscriptionPaid) {
+      return res.status(400).json({ message: 'Subscription already paid' });
+    }
+
+    // Update user with transaction ID and mark as paid
+    user.transactionId = transactionId;
+    user.subscriptionPaid = true;
+    user.subscriptionDate = new Date();
+    await user.save();
+
+    // Create verification request
+    const verificationRequest = await VerificationRequest.create({
+      userId: user._id,
+      name: user.name,
+      mobile: user.mobile,
+      transactionId: transactionId,
+      status: 'pending',
+    });
+
+    res.json({
+      message: 'Payment submitted successfully',
+      verificationRequestId: verificationRequest._id,
+      user: {
+        _id: user._id,
+        name: user.name,
+        mobile: user.mobile,
+        subscriptionPaid: user.subscriptionPaid,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-// CHECK VERIFICATION STATUS - Now protected
 const checkVerificationStatus = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Check authorization
-    if (req.userType === 'user' && req.user._id.toString() !== userId) {
-      return res.status(403).json({ message: 'Not authorized to view this user status' });
-    }
-
-    // Admin can check any user, user can only check themselves
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -223,7 +164,7 @@ const checkVerificationStatus = async (req, res) => {
   }
 };
 
-// Admin controllers remain the same
+// Admin controllers
 const getVerificationRequests = async (req, res) => {
   try {
     const { status } = req.query;
