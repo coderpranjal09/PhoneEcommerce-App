@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
+const { 
+  protect, 
+  authenticateUser, 
+  requireVerifiedUser 
+} = require('../middleware/authMiddleware');
 const {
   registerUser,
   loginUser,
@@ -10,13 +14,15 @@ const {
   updateVerificationStatus,
 } = require('../controllers/userController');
 
-// Public routes
+// Public routes (no authentication needed)
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.post('/submit-payment', submitPayment);
-router.get('/verification-status/:userId', checkVerificationStatus);
 
-// Admin protected routes
+// Protected routes (require either admin or user authentication)
+router.post('/submit-payment', authenticateUser, submitPayment);
+router.get('/verification-status/:userId', authenticateUser, checkVerificationStatus);
+
+// Admin-only protected routes
 router.get('/verification-requests', protect, getVerificationRequests);
 router.put('/verification-requests/:requestId', protect, updateVerificationStatus);
 
