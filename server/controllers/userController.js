@@ -114,6 +114,45 @@ const submitPayment = async (req, res) => {
       status: 'pending',
     });
 
+
+    // In your userController.js
+const checkVerificationStatus = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Find user by ID
+    const user = await User.findById(userId);
+    
+    // If user not found, return appropriate response
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
+    }
+    
+    // Return user data (exclude sensitive info)
+    res.json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isVerified: user.isVerified,
+        subscriptionPaid: user.subscriptionPaid,
+        subscriptionExpiresAt: user.subscriptionExpiresAt,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('Error checking verification status:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error' 
+    });
+  }
+};
     res.json({
       message: 'Payment submitted successfully',
       verificationRequestId: verificationRequest._id,
