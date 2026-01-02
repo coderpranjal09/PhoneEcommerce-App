@@ -123,15 +123,18 @@ const dellAllProduct = async(req,res)=>{
 
   try{
     const result = await Product.deleteMany({});
-    res.json({
-      message:"All products deleted successfully",
-      deleteCount:result.deletedCount
+    res.status(200).json({
+      success: true,
+      message: `Successfully deleted ${result.deletedCount} products`,
+      deleteCount: result.deletedCount
     });
   }
   catch(error){
-    res.json({
-      message:"failed .. unable to delete"
-    })
+    res.status(500).json({
+      success: false,
+      message: 'Server error occurred while deleting products',
+      error: error.message // Include error message for debugging
+    });
   }
 }
 
