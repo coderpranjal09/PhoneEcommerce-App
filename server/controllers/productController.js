@@ -119,10 +119,28 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const dellAllProduct = async(req,res)=>{
+
+  try{
+    const result = await Product.deleteMany({});
+    res.json({
+      message:"All products deleted successfully",
+      deleteCount:result.deletedCount
+    });
+  }
+  catch(error){
+    res.json({
+      message:"failed .. unable to delete"
+    })
+  }
+}
+
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
+  dellAllProduct
 };

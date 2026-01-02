@@ -122,7 +122,7 @@ const VerificationRequests = () => {
           </div>
           <div className="mt-4 md:mt-0 flex items-center space-x-2">
             <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-              <FaRupeeSign className="inline mr-1" /> ₹40 per approval
+              <FaRupeeSign className="inline mr-1" /> ₹49 per approval
             </span>
           </div>
         </div>

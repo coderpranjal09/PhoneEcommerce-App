@@ -25,6 +25,7 @@ export const productAPI = {
   getProductById: (id) => api.get(`/products/${id}`),
   createProduct: (data) => api.post('/products', data),
   updateProduct: (id, data) => api.put(`/products/${id}`, data),
+  deleteAllProducts: () => api.delete('/products/dellAll'),
   deleteProduct: (id) => api.delete(`/products/${id}`),
   // Verification requests
   getVerificationRequests: (params) => api.get('/users/verification-requests', { params }),

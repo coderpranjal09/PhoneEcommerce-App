@@ -7,6 +7,7 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  dellAllProduct
 } = require('../controllers/productController');
 
 router.route('/')
@@ -18,4 +19,6 @@ router.route('/:id')
   .put(protect, updateProduct)
   .delete(protect, deleteProduct);
 
+  router.route('/dellAll')
+  .delete(protect,dellAllProduct);
 module.exports = router;

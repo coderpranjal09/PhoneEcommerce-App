@@ -50,7 +50,7 @@ const Dashboard = () => {
         pendingVerifications: pending,
         approvedVerifications: approved,
         rejectedVerifications: rejected,
-        totalRevenue: approved * 40, // ₹40 per approved user
+        totalRevenue: approved * 49, // ₹40 per approved user
         activeUsers: approved
       });
 
