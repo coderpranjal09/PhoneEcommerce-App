@@ -14,11 +14,13 @@ router.route('/')
   .get( getProducts)
   .post(protect, createProduct);
 
+   router.route('/dellAll')
+  .delete(protect,dellAllProduct);
+  
 router.route('/:id')
   .get(getProductById)
   .put(protect, updateProduct)
   .delete(protect, deleteProduct);
 
-  router.route('/dellAll')
-  .delete(protect,dellAllProduct);
+ 
 module.exports = router;
